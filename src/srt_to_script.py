@@ -4,7 +4,7 @@ import re
 import sys
 
 def read_srt_file(filename):
-    with open(filename, 'r') as fp:
+    with open(filename, 'r', errors='replace') as fp:
         content = fp.read()
     return content
 
