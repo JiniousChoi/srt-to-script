@@ -34,9 +34,9 @@ def chop_into_lines(srt):
 def group_sentences(lines, joiner, psep=linesep*2, lsep=' '):
     '''
     joiner is a function
-        :param1 previous sentences in list
+        :param1 previous sentences in list; a.k.a paragraph
         :param2 current sentence
-        :return True if join the current to the current paragraph, False to make new paragraph
+        :return True if current sentence joins current paragraph, False to make new paragraph
                 with this current sentence
     psep: seperator between paragraphs
     lsep: seperator between sentences in same paragraph
@@ -70,7 +70,17 @@ def main(infile):
     lines = chop_into_lines(srt)
 
     def joiner(prev_lines, curr_line):
-        return sum([len(line) for line in prev_lines]) + len(curr_line) < 300
+        accu_cnt = sum([len(line) for line in prev_lines]) + len(curr_line)
+        minimum = 300
+        maximum = minimum + 100
+
+        if accu_cnt < minimum: 
+            return True
+
+        elif not ends_with_punctuation(prev_lines[-1]):
+            return True
+
+        return False
 
     screenplay = group_sentences(lines, joiner, linesep*2, '  ')
 
@@ -78,6 +88,8 @@ def main(infile):
 
     return screenplay
 
+def ends_with_punctuation(sentence):
+    return len(sentence)>0 and sentence[-1] in '.!?'
 
 if __name__ == '__main__':
     infile = sys.argv[1]
