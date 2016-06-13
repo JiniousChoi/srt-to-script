@@ -1,4 +1,4 @@
-srt-to-script
+[srt(SubRip Text)](https://en.wikipedia.org/wiki/SubRip) to script
 ===================
 
 ### Purpose:
