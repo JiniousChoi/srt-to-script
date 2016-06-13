@@ -3,6 +3,7 @@
 from os import linesep
 import re
 import sys
+from html_tag_stripper import strip_tags
 
 def read_srt_file(filename):
     with open(filename, 'r', errors='replace') as fp:
@@ -72,6 +73,8 @@ def main(infile):
         return sum([len(line) for line in prev_lines]) + len(curr_line) < 300
 
     screenplay = group_sentences(lines, joiner, linesep*2, '  ')
+
+    screenplay = strip_tags(screenplay)
 
     return screenplay
 
