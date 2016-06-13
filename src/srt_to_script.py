@@ -1,7 +1,9 @@
 #!/usr/bin/python3
 
+from os import linesep
 import re
 import sys
+from html_tag_stripper import strip_tags
 
 def read_srt_file(filename):
     with open(filename, 'r', errors='replace') as fp:
@@ -20,15 +22,16 @@ def strip_time_indicator(srt):
 
 
 def strip_empty_lines(srt):
-    pattern = re.compile('(\r\n){2,}')
-    return re.sub(pattern, '\r\n', srt)
+    #for supporting *nix,mac,windows respectively
+    pattern = re.compile('(\n|\r|\r\n){2,}')
+    return re.sub(pattern, r'\1', srt)
 
 
 def chop_into_lines(srt):
     return srt.strip().splitlines()
 
 
-def group_sentences(lines, joiner, psep='\n\n', lsep=' '):
+def group_sentences(lines, joiner, psep=linesep*2, lsep=' '):
     '''
     joiner is a function
         :param1 previous sentences in list
@@ -69,7 +72,9 @@ def main(infile):
     def joiner(prev_lines, curr_line):
         return sum([len(line) for line in prev_lines]) + len(curr_line) < 300
 
-    screenplay = group_sentences(lines, joiner, '\n\n', '  ')
+    screenplay = group_sentences(lines, joiner, linesep*2, '  ')
+
+    screenplay = strip_tags(screenplay)
 
     return screenplay
 
