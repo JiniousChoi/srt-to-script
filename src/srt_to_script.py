@@ -6,12 +6,17 @@ import sys
 from html_tag_stripper import strip_tags
 
 LINESEP = linesep
-LSEP = '  '
-PSEP = '\n\n'
+LSEP = '  '     #line seperator
+PSEP = '\n\n'   #paragraph seperator
+
 
 class SrtEntry:
     def __init__(self, raw, lsep=LSEP):
         self.lsep = lsep
+        self.counter=None
+        self.time_start=None
+        self.time_stop=None
+        self.sentences=None
         self.parse(raw)
 
     def parse(self, raw):
@@ -33,7 +38,7 @@ def read_srt_file(filename):
 
 
 def preprocess_linesep(raw):
-    #translate windows,mac newlines into *nix-like style
+    ''' translate windows,mac newlines into *nix-like style '''
     raw = raw.replace('\r\n', '\n')
     raw = raw.replace('\r', '\n')
     return raw
@@ -51,14 +56,19 @@ def chop_into_raw_entries(srt):
 
 
 def make_screenplay(srt_entries, grouping_entries, make_paragraph, psep=linesep*2, lsep='  '):
-    '''
-    grouping_entries is a function
-        :param1 previous sentences in list; a.k.a paragraph
-        :param2 current sentence
-        :return True if current sentence joins current paragraph, False to make new paragraph
-                with this current sentence
-    psep: seperator between paragraphs
-    lsep: seperator between sentences in same paragraph
+    '''make script-like screenplay
+    :param str_entries: a list of srt_entries
+    :param grouping_entries: callback for grouping srt_entries for each paragraph
+        :param prev_entries: current paragraph
+        :param curr_entry: candidate srt_entry for current paragraph
+        :return True if current srt_entry joins current paragraph
+                False to start another paragraph with curr_entry
+    :param make_paragraph: callback to stringify a group of srt_entries into a paragraph
+        :param srt_entries: a group of srt_entries for a paragraph
+        :param lsep: pass along the :param lsep below
+        :return a paragraph in string
+    :param psep: seperator between paragraphs
+    :param lsep: seperator between sentences in same paragraph
     '''
     groups = []
     group = [] #a group of entries to be one-paragraphed
