@@ -4,50 +4,26 @@ from .context import src
 
 import unittest
 
-
 class TestBasic(unittest.TestCase):
     '''Basic test cases'''
 
-    def test_strip_number_counters(self):
-        raw_script = load_file('./tests/sample/subtitle_short.srt')
-
-        actual = src.strip_number_counters(raw_script)
-
-        expected = load_file('./tests/sample/subtitle_short.out0')
-
-        self.assertEqual(actual, expected)
-
-
-    def test_strip_time_indicator(self):
-        raw_script = load_file('./tests/sample/subtitle_short.out0')
-
-        actual = src.strip_time_indicator(raw_script)
-        actual = src.strip_empty_lines(actual)
-
-        expected = load_file('./tests/sample/subtitle_short.out1')
-
-        self.assertEqual(actual, expected)
-
-    def test_chop_into_lines(self):
-        replacee = 'jinsung\r\nchoi\r\nsays\nhello\r\n\r\n\r\n'
-        actual = src.chop_into_lines(replacee)
-
-        expected = ['jinsung', 'choi', 'says', 'hello']
-
-        self.assertEqual(actual, expected)
-
-    def test_group_sentences(self):
-        sentences = ['sentence1','sentence2','sentence3','sentence4','sentence5','sentence6','sentence7','sentence8','sentence9','sentence10']
-
-        def joiner(prev, curr):
-            return len(prev)<5
-
-        actual = src.group_sentences(sentences, joiner, '\n\n', '**')
+    def test_srtentry(self):
+        raw = "1\n00:00:01,123 --> 00:00:04,345\nHello Sir.\nMy name is Jin"
+        entry = src.SrtEntry(raw, lsep=' ')
         
-        expected = 'sentence1**sentence2**sentence3**sentence4**sentence5\n\nsentence6**sentence7**sentence8**sentence9**sentence10'
+        self.assertEqual(entry.counter, "1")
+        self.assertEqual(entry.time_start, "00:00:01,123")
+        self.assertEqual(entry.time_stop, "00:00:04,345")
+        self.assertEqual(entry.sentences, "Hello Sir. My name is Jin")
+
+    def test_chop_into_raw_entries(self):
+        replacee = load_file('./tests/sample/subtitle_short.srt')
+        actual = src.chop_into_raw_entries(replacee)[:2]
+
+        expected = ['1\n00:00:00,100 --> 00:01:52,320\nwww.TUSUBTITULO.com\n-DIFUNDE LA CULTURA-',
+                    '2\n00:02:46,696 --> 00:02:48,228\nBurn them all!']
 
         self.assertEqual(actual, expected)
-
 
 def load_file(filename):
     with open(filename, 'r') as fp:

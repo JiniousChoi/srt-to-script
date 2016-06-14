@@ -13,5 +13,11 @@ class TagParserTest(unittest.TestCase):
         expected = 'Hello Potter!!Visit me Later'
         self.assertEqual(actual, expected)
 
+    def test_parse_tag_on_multiple_lines(self):
+        text_with_tags = '<i>Hello Potter!!\nVisit me Later</i>'
+        actual = src.strip_tags(text_with_tags)
+        expected = 'Hello Potter!!\nVisit me Later'
+        self.assertEqual(actual, expected)
+
 if __name__ == '__main__':
     unittest.main()
