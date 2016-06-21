@@ -1,0 +1,15 @@
+﻿1
+00:00:00,000 --> 00:00:02,350
+
+
+2
+00:00:02,350 --> 00:00:06,369
+MALE SPEAKER: Thank you for
+coming to Edmond Lau's talk.
+
+3
+00:00:06,370 --> 00:00:10,790
+He will be talking about how to
+be a more effective engineer.
+
+

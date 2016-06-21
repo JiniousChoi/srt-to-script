@@ -22,6 +22,9 @@ class SrtEntry:
     def parse(self, raw):
         pattern = re.compile(r'(\d+)\n(\d{2}:\d{2}:\d{2},\d{3}) --> (\d{2}:\d{2}:\d{2},\d{3})\n(.*)', re.DOTALL)
         matcher = re.search(pattern, raw)
+
+        assert matcher, "given input({raw}) not valid".format(raw=raw)
+
         self.counter = matcher.group(1)
         self.time_start = matcher.group(2)
         self.time_stop = matcher.group(3)
@@ -46,7 +49,7 @@ def preprocess_linesep(raw):
 
 def chop_into_raw_entries(srt):
     srt = preprocess_linesep(srt)
-    raw_entries = re.split('\n\n', srt)
+    raw_entries = re.split('\n{2,}', srt)
 
     def is_legit_sentence(line):
         return line!=None and re.search(r'\S+', line)
@@ -88,6 +91,16 @@ def make_screenplay(srt_entries, grouping_entries, make_paragraph, psep=linesep*
     return screenplay
 
 
+def raw_entries_to_strEntries(raw_entries):
+    result = []
+    for raw_entry in raw_entries:
+        try:
+            result.append(SrtEntry(raw_entry) )
+        except AssertionError as e:
+            pass
+    return result
+
+
 def main(infile):
     srt = read_srt_file(infile)
 
@@ -95,7 +108,7 @@ def main(infile):
 
     raw_entries = chop_into_raw_entries(srt)
 
-    srt_entries = [SrtEntry(raw_entry) for raw_entry in raw_entries]
+    srt_entries = raw_entries_to_strEntries(raw_entries)
 
     def grouping_entries(prev_entries, curr_entry):
         accu_cnt = sum([len(entry.sentences) for entry in prev_entries]) + len(curr_entry.sentences)
